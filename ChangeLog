@@ -1,3 +1,22 @@
+2004-03-06  Alan E Derhaag  <aderhaa@n2n2.com>
+
+	* FramesReady.pm:
+	Require a 2.001 version of LWP::UserAgent for setting of @redirects
+	allowed.  Explicitly use the URI::URL module for abs().  Supply the
+	missing @schema array missing since 1.10 version.  Drop the default
+	UserAgent setting of Mozilla/5.0 for 302 redirects instead a list of
+	URLs.  Enhanced pod documentation.  Added further Debug trace
+	information.  Fix use of explicit use of internal callback in favor of
+	that supplied by user or undef..  also the size.
+
+2003-12-11  Alan E Derhaag  <aderhaa@n2h2.com>
+
+	* Tree.pm: Initialize it to the 1.14 revision.
+
+	* Tree.pm: Import of Tree v. 1.014
+
+	* Tree.pm: New file.
+
 2002-04-27  Alan E. Derhaag  <aderhaa@n2h2.com>
 
 	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:

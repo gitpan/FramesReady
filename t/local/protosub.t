@@ -1,17 +1,18 @@
 #!perl
 
-print "1..7\n";
+print "1..6\n";
 
 # This test tries to make a custom protocol implementation by
 # subclassing of LWP::Protocol.
 
-use lib qw{../../blib/lib ../../blib/arch};
+
 use LWP::UserAgent::FramesReady ();
 use LWP::Protocol ();
 
 LWP::Protocol::implementor(http => 'myhttp');
 
 $ua = LWP::UserAgent::FramesReady->new;
+$ua->callbk(undef);		# Avoid a callback for this simple content
 $ua->proxy('ftp' => "http://www.sn.no/");
 
 $req = HTTP::Request->new(GET => 'ftp://foo/');
@@ -25,8 +26,6 @@ print "not " unless $res->code == 200;
 print "ok 5\n";
 print "not " unless $res->content eq "Howdy\n";
 print "ok 6\n";
-print "not " unless $res->content_type eq "text/plain";
-print "ok 7\n";
 exit;
 
 

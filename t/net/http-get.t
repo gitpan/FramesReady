@@ -6,16 +6,16 @@
 print "1..2\n";
 
 require "net/config.pl";
+require URI::URL;
 require LWP::Protocol::http;
 require LWP::UserAgent::FramesReady;
-require URI;
 
 my $ua = new LWP::UserAgent::FramesReady;    # create a useragent to test
 
 $netloc = $net::httpserver;
 $script = $net::cgidir . "/test";
 
-$url = new URI->new("http://$netloc$script?query");
+$url = new URI::URL("http://$netloc$script?query");
 
 my $request = new HTTP::Request('GET', $url);
 
@@ -27,15 +27,17 @@ my $str = $response->as_string;
 
 print "$str\n";
 
-if ($response->is_success and $str =~ /^REQUEST_METHOD\s*=\s*GET$/m) {
+if ($response->is_success and $str =~ /^REQUEST_METHOD=GET$/m) {
     print "ok 1\n";
-} else {
+}
+else {
     print "not ok 1\n";
 }
 
-if ($str =~ /^QUERY_STRING\s*=\s*query$/m) {
+if ($str =~ /^QUERY_STRING=query$/m) {
     print "ok 2\n";
-} else {
+}
+else {
     print "not ok 2\n";
 }
 

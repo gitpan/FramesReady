@@ -8,14 +8,13 @@ print "1..2\n";
 require "net/config.pl";
 require LWP::Protocol::http;
 require LWP::UserAgent::FramesReady;
-require URI;
 
 $netloc = $net::httpserver;
 $script = $net::cgidir . "/test";
 
 my $ua = new LWP::UserAgent::FramesReady;    # create a useragent to test
 
-$url = new URI->new("http://$netloc$script");
+$url = new URI::URL("http://$netloc$script");
 
 my $form = 'searchtype=Substring';
 
@@ -28,15 +27,17 @@ my $str = $response->as_string;
 
 print "$str\n";
 
-if ($response->is_success and $str =~ /^REQUEST_METHOD\s*=\s*POST$/m) {
+if ($response->is_success and $str =~ /^REQUEST_METHOD=POST$/m) {
     print "ok 1\n";
-} else {
+}
+else {
     print "not ok 1\n";
 }
 
-if ($str =~ /^CONTENT_LENGTH\s*=\s*(\d+)$/m && $1 == length($form)) {
+if ($str =~ /^CONTENT_LENGTH=(\d+)$/m && $1 == length($form)) {
     print "ok 2\n";
-} else {
+}
+else {
     print "not ok 2\n";
 }
 

@@ -11,21 +11,22 @@ t/base/ua.t			Basic LWP::UserAgent tests
 t/html/form.t			Test HTML::Form module
 t/live/activestate.t		Setup live testing and directory for Makefile.PL
 t/local/autoload.t		Test autoloading of LWP::Protocol modules
+t/local/frames.t		Test frame with emulation processing
 t/local/http.t			Test http to local server
 t/local/protosub.t		Test with other protocol module
 t/net/config.pl.dist		Suggested configuration for net tests
+t/net/frames.s
 t/net/http-get.t
 t/net/http-post.t
 t/net/http-timeout.t
 t/net/mirror.t
 t/net/moved.t
 t/net/proxy.t
-t/net/frames.t
+t/net/cgi-bin/frame1
+t/net/cgi-bin/frametst
 t/net/cgi-bin/moved
 t/net/cgi-bin/nph-slowdata
 t/net/cgi-bin/slowread
 t/net/cgi-bin/test
 t/net/cgi-bin/timeout
-t/net/cgi-bin/frametst
-t/net/cgi-bin/frame1
 META.yml                                 Module meta-data (added by MakeMaker)

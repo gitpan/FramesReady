@@ -2,12 +2,13 @@
 # LWP::UserAgent::FramesReady -- set up an environment for tracking frames
 # and framesets
 #
-# $Id: FramesReady.pm,v 1.15 2003/12/11 06:25:56 aederhaag Exp $
+# $Id: FramesReady.pm,v 1.16 2004/03/06 05:26:39 aederhaag Exp $
 ################################################################################
 # Allow POST to be redirected as well
 
 package LWP::UserAgent::FramesReady;
 use LWP::UserAgent;
+use URI::URL;
 use vars qw/$VERSION @redirects/;
 @ISA = qw(LWP::UserAgent);
 
@@ -16,7 +17,10 @@ use HTML::TokeParser;
 use LWP::Debug ();
 
 @redirects = ('GET', 'HEAD', 'POST');
-$VERSION = sprintf("%d.%03d", q$Revision: 1.15 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%03d", q$Revision: 1.16 $ =~ /(\d+)\.(\d+)/);
+
+# constant for checking for a valid schema
+our @schema = ('http', 'ftp', 'nntp', 'gopher', 'wais', 'news', 'https');
 
 sub new {
   my ($class, $cnf) = @_;
@@ -35,7 +39,6 @@ sub new {
   $self->{size} = $size;
   $self->{nomax} = $nomax;
   $self->{credent} = $credent;
-  $self->agent("Mozilla/5.0 (compatible; MSIE 5.5; Windows 95)");
   $self->requests_redirectable(\@redirects) if @redirects;
   $self->max_depth(3);
 
@@ -68,20 +71,23 @@ automatically.
 
 The subroutine variant requires a hash reference to a callback routine
 that is supplied to the request to process the content in chunks to
-look for immediate refreshes and alter them to be redirects which
-LWP::UserAgent->request will follow out as it does all other
-redirects.  If size (supplied as an additional hash element) is
+look for, for instance, immediate refreshes and alter them to be
+redirects which LWP::UserAgent->request will follow out as it does all
+other redirects.  If size (supplied as an additional hash element) is
 supplied it will be the suggested chunk size.  If the subroutine
-variant is requested without a size, the size will default to 8K.
+variant is requested without a size, the size will default to 8K.  The
+default is to use the callback() function defined with the class
+object.
 
 The LWP::UserAgent::FramesReady::callback is supplied as the default
 callback routine and the $cnf->{'nomax'} can be supplied and used by that
 routine to enforce truncation of received content even if the request
 to do so is not honored by the server called for the content.
 
-To override the default behavior and not use an actual callback,
-something like a sub { return undef; } should be used to avoid it.
-Not defining a code ref will default to the callback defined here.
+To override the default behavior and not use an actual callback, the
+$ua->callbk should be called supplying 'undef' as the subroutine to
+use as in '$ua->callbk(undef)'.  Not defining a code ref will default
+to the callback defined here.
 
 Because a framed HTML page actually consists of several HTML pages and
 requires more than one HTTP response, LWP::UserAgent::FramesReady
@@ -122,8 +128,8 @@ sub request {
 
   # Try a different approach..  we already know to call ourselves with
   # the proper number of parameters.
-  LWP::Debug::trace('(' . join(',',@_) . ')');
   if (scalar @_ > 3){
+    LWP::Debug::trace('(' . join(',',@_) . ')');
     LWP::Debug::debug("Called with more than three params; "
 		      . "LWP::UserAgent::request will be used instead");
     return $self->SUPER::request(@_);
@@ -164,7 +170,8 @@ sub request {
       $request->uri($_);
       $request->headers->{'pragma'} = 'no_wait';
       my $child = $parent->add_child($self->SUPER::request($request,
-							   \&callback, 8192));
+							   $self->{callback},
+							   $self->{size}));
       if ($child) {
 	push @resp_queue, $child;
       } else {

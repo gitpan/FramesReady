@@ -25,7 +25,8 @@ if ($D eq 'daemon') {
 	    my $func = lc("httpd_" . $r->method . "_$p");
 	    if (defined &$func) {
 		&$func($c, $r);
-	    } else {
+	    }
+	    else {
 		$c->send_error(404);
 	    }
 	}
@@ -37,7 +38,7 @@ if ($D eq 'daemon') {
 else {
     use Config;
     my $perl = $Config{'perlpath'};
-    $perl = $^X if $^O eq 'VMS';
+    $perl = $^X if $^O eq 'VMS' or -x $^X and $^X =~ m,^([a-z]:)?/,i;
     open(DAEMON, "$perl local/http.t daemon |") or die "Can't exec daemon: $!";
 }
 
@@ -57,9 +58,9 @@ sub url {
 
 print "Will access HTTP server at $base\n";
 
-require LWP::UserAgent::FramesReady;
+require LWP::UserAgent;
 require HTTP::Request;
-$ua = new LWP::UserAgent::FramesReady;
+$ua = new LWP::UserAgent;
 $ua->agent("Mozilla/0.01 " . $ua->agent);
 $ua->from('gisle@aas.no');
 
@@ -191,23 +192,22 @@ print "ok 9\n";
 
 # Let's test a redirect loop too
 sub httpd_get_redirect2 { shift->send_redirect("/redirect3/") }
-sub httpd_get_redirect3 { shift->send_redirect("/redirect4/") }
-sub httpd_get_redirect4 { shift->send_redirect("/redirect5/") }
-sub httpd_get_redirect5 { shift->send_redirect("/redirect6/") }
-sub httpd_get_redirect6 { shift->send_redirect("/redirect2/") }
+sub httpd_get_redirect3 { shift->send_redirect("/redirect2/") }
 
 $req->url(url("/redirect2", $base));
+$ua->max_redirect(5);
 $res = $ua->request($req);
 #print $res->as_string;
 print "not " unless $res->is_redirect
                 and $res->header("Client-Warning") =~ /loop detected/i;
 print "ok 10\n";
-$i = 1;
+$i = 0;
 while ($res->previous) {
    $i++;
    $res = $res->previous;
 }
-print "not " unless $i == 6;
+
+print "not " unless $i == 5;
 print "ok 11\n";
 
 #----------------------------------------------------------------
@@ -223,7 +223,8 @@ sub httpd_get_basic
 	$c->send_crlf;
 	$c->send_crlf;
 	$c->print("$u\n");
-    } else {
+    }
+    else {
         $c->send_basic_header(401);
 	$c->print("WWW-Authenticate: Basic realm=\"libwww-perl\"\015\012");
 	$c->send_crlf;
@@ -231,12 +232,13 @@ sub httpd_get_basic
 }
 
 {
-   package MyUA; @ISA=qw(LWP::UserAgent::FramesReady);
+   package MyUA; @ISA=qw(LWP::UserAgent);
    sub get_basic_credentials {
       my($self, $realm, $uri, $proxy) = @_;
       if ($realm eq "libwww-perl" && $uri->rel($base) eq "basic") {
 	  return ("ok 12", "xyzzy");
-      } else {
+      }
+      else {
           return undef;
       }
    }
@@ -275,7 +277,8 @@ sub httpd_get_proxy
        $r->url->scheme eq "ftp") {
        $c->send_basic_header(200);
        $c->send_crlf;
-   } else {
+   }
+   else {
        $c->send_error;
    }
 }
@@ -296,7 +299,16 @@ sub httpd_post_echo
    $c->print("Content-Type: text/plain");
    $c->send_crlf;
    $c->send_crlf;
-   $c->print($r->as_string);
+
+   # Do it the hard way to test the send_file
+   open(TMP, ">tmp$$") || die;
+   binmode(TMP);
+   print TMP $r->as_string;
+   close(TMP) || die;
+
+   $c->send_file("tmp$$");
+
+   unlink("tmp$$");
 }
 
 $req = new HTTP::Request POST => url("/echo/foo", $base);
@@ -309,7 +321,7 @@ $_ = $res->content;
 print "not " unless $res->is_success
                 and /^Content-Length:\s*16$/mi
 		and /^Content-Type:\s*application\/x-www-form-urlencoded$/mi
-		and /^foo=bar&bar=test/m;
+		and /^foo=bar&bar=test$/m;
 print "ok 17\n";		
 
 #----------------------------------------------------------------
