@@ -18,7 +18,7 @@ unless (getopts("n")) {
     die "Usage: $0 [-n]\n";
 }
 
-# Check if we have internet connection
+# Check if we have an internet connection
 require IO::Socket;
 my $s = IO::Socket::INET->new(PeerAddr => "www.google.com:80",
 			      Timeout  => 10,
@@ -30,7 +30,7 @@ if ($s) {
   print <<EOT;
 
     You appear to be directly connected to the Internet.  I have some
-	tests that tries to access some sites on the net to verify
+	tests that try to access some sites on the net to verify
 	that the new HTTP/1.1 support works as it should.
 
 EOT
@@ -78,7 +78,7 @@ if ($@) {
 $@
 The HTML::Parser is needed to extract correct base URI information from
 HTML so that we can resolve relative links correctly.  The HTML::Form
-module also need HTML::TokeParser to work.
+module also needs HTML::TokeParser to work.
 
 EOT
     sleep(2);  # Don't hurry too much
@@ -115,16 +115,16 @@ print "\n";
 # Ok, now it is time to really generate the Makefile
 
 WriteMakefile(
-   NAME          => 'FramesReady',
-   VERSION_FROM  => 'lib/LWP/UserAgent/FramesReady.pm',
-   PREREQ_PM     => { 'URI'              => "1.10",
-                      'MIME::Base64'     => "2.1",
-                      'Net::FTP'         => "2.58",
-                      'HTML::HeadParser' => 0,
-                      'Digest::MD5'      => 0,
-                     },
-   'dist'        => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-);
+	      NAME          => 'FramesReady',
+	      VERSION_FROM  => 'lib/LWP/UserAgent/FramesReady.pm',
+	      PREREQ_PM     => { 'URI'              => "1.10",
+				 'MIME::Base64'     => "2.1",
+				 'Net::FTP'         => "2.58",
+				 'HTML::HeadParser' => 0,
+				 'Digest::MD5'      => 0,
+			     },
+	      'dist'        => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+	      );
 
 
 package MY;
@@ -133,12 +133,12 @@ package MY;
 sub test
 {
     q(
-TEST_VERBOSE=0
+      TEST_VERBOSE=0
 
 test: all
 	$(FULLPERL) t/TEST $(TEST_VERBOSE)
 
-);
+    );
 }
 
 

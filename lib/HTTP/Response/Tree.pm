@@ -2,7 +2,7 @@
 # HTTP::Response::Tree -- set up an environment for tracking frames
 # and framesets
 #
-# $Id: Tree.pm,v 1.3 2002/03/08 01:06:54 aderhaa Exp $
+# $Id: Tree.pm,v 1.14 2003/12/11 05:50:33 aederhaag Exp $
 ################################################################################
 
 package   HTTP::Response::Tree;
@@ -12,7 +12,7 @@ use       vars qw/$VERSION/;	# make it exportable
 
 use strict;
 
-$VERSION = sprintf("%d.%03d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%03d", q$Revision: 1.14 $ =~ /(\d+)\.(\d+)/);
 
 sub new {
   my ($proto, $obj) = @_;
