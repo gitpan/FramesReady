@@ -2,7 +2,7 @@
 # LWP::UserAgent::FramesReady -- set up an environment for tracking frames
 # and framesets
 #
-# $Id: FramesReady.pm,v 1.13 2002/04/19 17:03:30 ewippre Exp $
+# $Id: FramesReady.pm,v 1.14 2002/04/27 02:07:38 aderhaa Exp $
 ################################################################################
 
 package LWP::UserAgent::FramesReady;
@@ -14,7 +14,7 @@ use HTTP::Response::Tree;
 use HTML::TokeParser;
 use LWP::Debug ();
 
-$VERSION = sprintf("%d.%03d", q$Revision: 1.13 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%03d", q$Revision: 1.14 $ =~ /(\d+)\.(\d+)/);
 
 sub new {
   my $proto = shift;
@@ -35,7 +35,7 @@ LWP::UserAgent::FramesReady - a frames-capable version of LWP::UserAgent
 
 use LWP::UserAgent::FramesReady;
 
-$ua = new LWP::UserAgent::FramesReady;
+$ua = new LWP::UserAgent;
 
 $response = $ua->request($http_request);
 
@@ -46,13 +46,9 @@ enough to recognize the presence of frames in HTML and load them
 automatically.
 
 Because a framed HTML page actually consists of several HTML pages and
-requires more than one HTTP response, LWP::UserAgent::FramesReady
-returns framed pages as HTTP::Response::Tree objects.  Responses that
-don't have the Content-type of 'text/html' or have a return code < 400
-are still returned as HTTP::Response objects as frames processing is
-probably not valid for them. B<Note:> a
-$response->isa('HTTP::Response::FramesReady') type check should be
-done before attempting to use this modules methods.
+requires more than one HTTP response, LWP::UserAgent::FramesReady returns
+framed pages as HTTP::Response::Tree objects.  Simple responses are still
+returned as HTTP::Response objects.
 
 =head1 METHODS
 
@@ -99,15 +95,14 @@ sub request {
   my $req = shift;
   my $tree = $self->SUPER::request($req);
 
-  # Don't track frames for possible redirects, 404 error pages even if framed.
-  # Also, provision is made to skip RobotUA subrequests for robot rules.
-  return $tree if $tree->code >= 400 || $tree->request->uri =~ /robots.txt$/;
+  # Don't track frames for possible redirects or 404 error pages
+  return $tree if $tree->code >= 400 || $tree->code < 200 ||
+    $tree->request->uri =~ /robots.txt$/;
 
   # Only valid to track frames in HTML or SHTML--use HTTP::Headers method
   return $tree unless $tree->content_type =~ m#text/html#;
 
-  $tree = HTTP::Response::Tree->new($tree) unless
-    $tree->isa('HTTP::Response::Tree');
+  $tree = HTTP::Response::Tree->new($tree);
   $tree->max_depth($self->max_depth);
 
   my @resp_queue = ($tree);

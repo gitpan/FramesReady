@@ -6,6 +6,9 @@
 
 print "1..7\n";
 
+#  use lib qw{../../blib/lib ../../blib/arch};
+#  require "./config.pl";
+
 require "net/config.pl";
 require LWP::Protocol::http;
 require LWP::UserAgent::FramesReady;
@@ -67,9 +70,9 @@ if ($tree_good) {
   }
   print "ok 7\n";
 } else {
-  print "not ok 5\n";
-  print "not ok 6\n";
-  print "not ok 7\n";
+  for (5..7) {
+    print "not ok $_\n";
+  }
 }
 
 # avoid -w warning
