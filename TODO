@@ -1,0 +1,19 @@
+                                            $Date: 2001/10/26 23:05:23 $
+
+This is a list of things that we plan to implement in FramesReady.
+
+  o  Future provision for levels and graphic images inclusion.
+
+  o  Provide initial credentials so that we don't always have to get a
+     401 response first.  Both for Basic and Digest authentication.
+     This is in fact implemented for LWPng.
+
+  o  Support PICS??
+
+  o  Include more useful programs
+
+  o  More documentation
+
+  o  More tests
+
+  o  Fix bugs, if there are any...

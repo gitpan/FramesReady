@@ -1,0 +1,190 @@
+2002-04-19  ewippre  <ewippre@noctis.ops.n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	BUG00291: Added variable declaration to avoid errors from some
+	URLs during scan_page operation.
+
+2002-04-16  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	BUG02352: Optimize immediate return if content-type is not HTML.
+
+2002-04-11  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	BUG02352: Correct to not attempt reclassing and populating any
+	response content if frames are not even possible w/code for errors
+	greater or equal to 400.
+
+2002-04-03  jhamilto  <jhamilto@noctis.ops.n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	Merge of BFD3_07_0574_BRANCH & Trunk Head Revision
+
+2002-04-01  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Switch from TreeBuilder to TokeParser for ease of tag search
+	and manipulation.  Corrected for the non-populate of a content-type
+	header for FTP, GOPHER and other protocols the module may encounter.
+	Correct to not try to track frames on an error page.  Added addendum
+	to copyright notice for possible CPAN release.
+
+2002-03-27  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Correct for problem with tracking frames when an error
+	return exited early and didn't populate conditionally checked
+	structure elements.
+
+2002-03-22  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Correct for check of requested URI to first check for a 503
+	(WAIT) error that causes the request method to not populate the field.
+
+2002-03-21  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Better correction made that doesn't depend on assumed order
+	of processing that an OR will return TRUTH on the first conditional
+	check.  Arrays are checked as arrays and scalars as scalars.
+
+2002-03-19  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Corrected for header Content-type being array or scalar
+	values and not just as an array.
+
+2002-03-15  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Added check of each/every content-type header for test/html
+	content for without it multiple content-types would not pass the test.
+
+2002-03-11  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Added check for early return of HTTP::Response to request if
+	the URL was for a robots.txt file--short changes 404 and redirects.
+
+2002-03-08  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Implement IFRAMEs and FRAMEs processing with fine tuning of
+	the tree traversal.
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Initialized *uris variables sooner in the
+	extract_frame_uris() so that an iframe in a body can set children to
+	follow rather than only frames within framesets.  Optimized the code
+	to release memory by the delete the $html structure with an error exit
+	as well as a correct one.
+
+	* /cvsroot/lib/HTTP/Response/Tree.pm:
+	REQ01613: dropped leading white space trim for every iteration of the
+	loop.
+
+2002-03-07  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Made ready for production with a proper heading and fine
+	tuning of class method.
+
+2002-03-06  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Changed header (pragma) to 'no_wait' rather than
+	'child_proc' to be more specific to its use.
+
+	* /cvsroot/lib/HTTP/Response/Tree.pm:
+	REQ01613: The cat_all_content() now concatenates both content and meta
+	labels within the class.  The child responses are removed after the
+	contenation.  Content is striped of leading and trailing white space
+	to conserve on data space.
+
+	* /cvsroot/lib/HTTP/Response/Tree.pm:
+	REQ01613: Strip leading and trailing white space from content and meta
+	fields.  Remove children when through concatenating their content to
+	the main response.
+
+	* /cvsroot/lib/HTTP/Response/Tree.pm:
+	REQ01613: Corrected typo (missing line terminator).
+
+	* /cvsroot/lib/HTTP/Response/Tree.pm:
+	REQ01613: Added x-meta-keywords to the concatenation but directly into
+	the $self->headers->{'x-meta-keywords'} rather than passing it back.
+
+2002-03-05  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Embellished frameset search in body so if no more content is
+	found an additional search does not bomb.  Added header 'pragma' to
+	disable wait state for requests in RobotBFD::simple_request.
+
+2002-03-03  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: modified request() to return earily if the content-type is
+	not text/[s]html.
+
+2002-03-02  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Temporary fix for disabling frames search on a text/plain
+	results as expected by robots.txt file request.
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Modifications to request() function necessary to allow
+	following redirects and other things that the extra parameters allowed
+	the base class object to use.
+
+2002-03-01  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Corrected calls and use of blessed HTTP::Response::Tree
+	objects.
+
+	* /cvsroot/lib/HTTP/Response/Tree.pm:
+	REQ01613: Ahh..  finally a working version but
+	LWP::UserAgent::FramesReady needs better method of finding framesets.
+
+2002-02-28  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: corrected possible blessed HTTP::Request::Tree child
+	initialization but this should be handled within that module probably.
+
+	* /cvsroot/lib/HTTP/Response/Tree.pm:
+	REQ01613: Recursion in member needs fixing while child
+	($self->{_hrt_children}) appears to be fixed.
+
+2002-02-27  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Added head information for tracking release versions.
+
+	* /cvsroot/lib/HTTP/Response/Tree.pm:
+	REQ01613: Added header information so version information is visible.
+
+2002-02-26  Alan E. Derhaag  <aderhaa@n2h2.com>
+
+	* /cvsroot/lib/HTTP/Response/Tree.pm:
+	REQ01935: Checkin for Larry's latest version found on his machine.
+
+2002-02-05  larry  <larry@noctis.ops.n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: Stomped a subtle bug that prevented all frames from
+	being returned in a frameset
+
+2002-02-01  larry  <larry@noctis.ops.n2h2.com>
+
+	* /cvsroot/lib/LWP/UserAgent/FramesReady.pm:
+	REQ01613: LWP::UserAgent::FramesReady is a version of
+	LWP::UserAgent that is capable of following frames
+
+	* /cvsroot/lib/HTTP/Response/Tree.pm:
+	REQ01613:  HTTP::Response::Tree - for holding collections of
+	HTTP::Response objects
+
