@@ -2,7 +2,7 @@
 # LWP::UserAgent::FramesReady -- set up an environment for tracking frames
 # and framesets
 #
-# $Id: FramesReady.pm,v 1.16 2004/03/06 05:26:39 aederhaag Exp $
+# $Id: FramesReady.pm,v 1.16 2007/10/25 07:18:45 aederhaag Exp $
 ################################################################################
 # Allow POST to be redirected as well
 

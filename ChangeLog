@@ -1,3 +1,35 @@
+2008-12-12  Alan E Derhaag  <aederhaag@alanhp.newerasoftdevel.com>
+
+	* README:
+	Modified the long wrong email address for bug reports and suggestions.
+
+	* TODO: Added an addition entry for supporting user requests.
+
+	* t/live/cpan.t:
+	Replace ftp://activestate.com with ftp://cpan.llarian.com access.
+
+2008-12-11  Alan E Derhaag  <aederhaag@alanhp.newerasoftdevel.com>
+
+	* t/TEST, t/README, t/net/proxy.t, t/net/moved.t, t/net/mirror.t, t/net/http-timeout.t, t/net/http-post.t, t/net/http-get.t, t/local/protosub.t, t/local/http.t, t/local/frames.t:
+	Initial check in for replacement code version archive.
+
+	* t/local/autoload.t, t/html/form.t:
+	Initial Check in for replacement code version archive.
+
+	* t/base/ua.t: Initial check in for replacement code version archive.
+
+2007-10-25  Alan E Derhaag  <aederhaag@alanhp.newerasoftdevel.com>
+
+	* lib/HTTP/Response/Tree.pm, lib/LWP/UserAgent/FramesReady.pm, META.yml, MANIFEST, TODO:
+	Initial repository add at higher revision number for start repository recovery
+
+	* README:
+	Initial repository add at higher version for start repository recovery
+
+	* Makefile.PL: Makefile.PL initiation of install
+
+	* ChangeLog: Inserting ChangeLog while opening repository for checkin.
+
 2004-03-06  Alan E Derhaag  <aderhaa@n2n2.com>
 
 	* FramesReady.pm:

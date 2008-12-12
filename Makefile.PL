@@ -1,5 +1,5 @@
 # This -*- perl -*- script writes the Makefile for FramesReady
-# $Id: $
+# $Id: Makefile.PL,v 1.16 2007/10/25 06:59:43 aederhaag Exp $
 
 require 5.005;
 use strict;

@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 # -*- mode: cperl; -*-
 
 { local($!) = 1; print "Content-Type: text/html\n\n"; }

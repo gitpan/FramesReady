@@ -1,4 +1,4 @@
-                                            $Date: 2003/12/10 22:25:23 $
+                                            $Date: 2008/12/12 04:55:32 $
 
 This is a list of things that we plan to implement in FramesReady.
 
@@ -13,3 +13,6 @@ This is a list of things that we plan to implement in FramesReady.
   o  More tests
 
   o  Fix bugs, if there are any...
+
+  o  Support requests for enhancements
+

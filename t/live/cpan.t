@@ -4,17 +4,19 @@ use strict;
 use Net::HTTP;
 
 
-my $s = Net::HTTP->new(Host => "ftp.activestate.com",
+# my $s = Net::HTTP->new(Host => "ftp.activestate.com",
+my $s = Net::HTTP->new(Host => "cpan.llarian.net",
 		       KeepAlive => 1,
 		       Timeout => 15,
 		       PeerHTTPVersion => "1.1",
 		       MaxLineLength => 512) || die "$@";
 
 for (1..2) {
-    $s->write_request(TRACE => "/libwww-perl",
+#     $s->write_request(TRACE => "/libwww-perl",
+    $s->write_request(TRACE => "/pub/CPAN",
 		      'User-Agent' => 'Mozilla/5.0',
 		      'Accept-Language' => 'no,en',
-		      Accept => '*/*');
+		      'Accept' => '*/*');
 
     my($code, $mess, %h) = $s->read_response_headers;
     print "$code $mess\n";
@@ -31,11 +33,11 @@ for (1..2) {
     }
     $buf =~ s/\r//g;
 
-    $err++ unless $buf eq "TRACE /libwww-perl HTTP/1.1
-Accept: */*
-Accept-Language: no,en
-Host: ftp.activestate.com:80
+    $err++ unless $buf eq "TRACE /pub/CPAN HTTP/1.1
+Host: cpan.llarian.net
 User-Agent: Mozilla/5.0
+Accept-Language: no,en
+Accept: */*
 
 ";
 
