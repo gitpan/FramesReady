@@ -1,5 +1,5 @@
 # This -*- perl -*- script writes the Makefile for FramesReady
-# $Id: Makefile.PL,v 1.16 2007/10/25 06:59:43 aederhaag Exp $
+# $Id: Makefile.PL,v 1.17 2008/12/22 20:08:39 aederhaag Exp $
 
 require 5.005;
 use strict;
@@ -117,14 +117,19 @@ print "\n";
 WriteMakefile(
 	      NAME          => 'FramesReady',
 	      VERSION_FROM  => 'lib/LWP/UserAgent/FramesReady.pm',
-	      PREREQ_PM     => { 'URI'              => "1.10",
-				 'MIME::Base64'     => "2.1",
-				 'Net::FTP'         => "2.58",
-				 'HTML::HeadParser' => 0,
-				 'Digest::MD5'      => 0,
-			     },
-	      'dist'        => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-	      );
+	      PREREQ_PM     => {
+                  'URI'			=> "1.10",
+                  'HTML::HeadParser'	=> '0', # or a minimum working version
+                  'MIME::Base64'	=> '2.1', # or a minimum working version
+                  'LWP::UserAgent'	=> '0', # or a minimum working version
+                  'LWP::Debug'		=> '0', # minimum debugging
+                  'HTML::Form'		=> '0', # or a minimum working version
+                  'HTTP::Daemon'	=> '0', # or a minimum working version
+                  'Net::HTTP'		=> '0', # or a minimum working version
+                  'Net::FTP'		=> "2.58",
+                  'Digest::MD5'		=> 0,},
+              'dist'        => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    );
 
 
 package MY;

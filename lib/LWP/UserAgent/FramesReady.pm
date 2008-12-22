@@ -1,8 +1,8 @@
-################################################################################
+c################################################################################
 # LWP::UserAgent::FramesReady -- set up an environment for tracking frames
 # and framesets
 #
-# $Id: FramesReady.pm,v 1.16 2007/10/25 07:18:45 aederhaag Exp $
+# $Id: FramesReady.pm,v 1.18 2008/12/22 20:29:10 aederhaag Exp $
 ################################################################################
 # Allow POST to be redirected as well
 
@@ -17,7 +17,7 @@ use HTML::TokeParser;
 use LWP::Debug ();
 
 @redirects = ('GET', 'HEAD', 'POST');
-$VERSION = sprintf("%d.%03d", q$Revision: 1.16 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%03d", q$Revision: 1.18 $ =~ /(\d+)\.(\d+)/);
 
 # constant for checking for a valid schema
 our @schema = ('http', 'ftp', 'nntp', 'gopher', 'wais', 'news', 'https');
@@ -34,7 +34,7 @@ sub new {
   $nomax = 0 unless defined $nomax;
   my $self = $class->SUPER::new();
   my $credent = delete $cnf->{credent};
-  $credent = '' unless defined $credent;
+  $credent = '' unless defined $credent; # Do not leave it an undef
   $self->{callback} = $callback;
   $self->{size} = $size;
   $self->{nomax} = $nomax;
@@ -84,19 +84,22 @@ callback routine and the $cnf->{'nomax'} can be supplied and used by that
 routine to enforce truncation of received content even if the request
 to do so is not honored by the server called for the content.
 
-To override the default behavior and not use an actual callback, the
-$ua->callbk should be called supplying 'undef' as the subroutine to
-use as in '$ua->callbk(undef)'.  Not defining a code ref will default
-to the callback defined here.
+To override the default behavior and not use the internal callback,
+the input parameter or $ua->callbk should be called supplying
+something other than 'undef' as the subroutine to use as in
+'$ua->callbk(undef)'.  Not defining a code ref will default to the
+callback defined here as following out redirects (refreshes) is
+required by this processing method.
 
 Because a framed HTML page actually consists of several HTML pages and
 requires more than one HTTP response, LWP::UserAgent::FramesReady
 returns framed pages as HTTP::Response::Tree objects.  Responses that
-don't have the Content-type of 'text/html' or have a return code < 400
-are still returned but as HTTP::Response objects as frames processing
-is probably not valid for them. B<Note:> a
-$response->isa('HTTP::Response::FramesReady') type check should be
-done before attempting to use this module's methods.
+don't have the Content-type of 'text/html' or have a return code
+outside of the 200-399 range are returned as HTTP::Response objects as
+frames processing is probably not valid for them.
+
+B<Note:> a $response->isa('HTTP::Response::FramesReady') type check
+should be done before attempting to use this module's methods.
 
 =head1 METHODS
 
@@ -140,11 +143,6 @@ sub request {
     warn "request() not called with an HTTP::Request";
     return undef;
   }
-
-#  Just throw away any other parameters
-#    if (defined($_[0]) && ref ($_[0]) eq 'CODE') {
-#      shift; shift;		# Remove callback and size
-#    }
 
   my $tree = $self->SUPER::request($req, $self->{callback}, $self->{size});
 
@@ -270,7 +268,7 @@ already be content from a previous chunk that was processed.
 sub callback {
   my ($data, $resp, $proto) = @_;
 
-  # LWP::UserAgent should be populating the refresh header process it here
+  # LWP::UserAgent should be populating the refresh header--process it here
   if (exists($resp->headers->{'refresh'})) {
     if ($resp->headers->{'refresh'} =~ /^[0-9];.*URL=([^">]+)/is) {
       my $url = $1;
@@ -293,7 +291,7 @@ sub callback {
 
   # Fixup to correct override by server for request for max bytes
   # Servers have no compulsion to follow the request but if we made it
-  # want it enforced here unless told otherwise
+  # we want it enforced here unless told otherwise
   if (defined($resp->request->headers->{'range'}) && ! $self->{nomax}) {
     my ($maxs) = $resp->request->headers->{'range'} =~ /bytes=0-(.*)/;
     if ($maxs && length($resp->content) > $maxs) {
@@ -306,7 +304,7 @@ sub callback {
     }
   }
 
-    # We must restore the _content since the parent assumes we deal with it
+  # We must restore the _content since the parent assumes we deal with it
   $resp->{_content} .= $data;
   return undef;
 }
