@@ -1,8 +1,8 @@
-c################################################################################
+################################################################################
 # LWP::UserAgent::FramesReady -- set up an environment for tracking frames
 # and framesets
 #
-# $Id: FramesReady.pm,v 1.18 2008/12/22 20:29:10 aederhaag Exp $
+# $Id: FramesReady.pm,v 1.19 2008/12/23 02:12:09 aederhaag Exp $
 ################################################################################
 # Allow POST to be redirected as well
 
@@ -17,7 +17,7 @@ use HTML::TokeParser;
 use LWP::Debug ();
 
 @redirects = ('GET', 'HEAD', 'POST');
-$VERSION = sprintf("%d.%03d", q$Revision: 1.18 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%03d", q$Revision: 1.19 $ =~ /(\d+)\.(\d+)/);
 
 # constant for checking for a valid schema
 our @schema = ('http', 'ftp', 'nntp', 'gopher', 'wais', 'news', 'https');

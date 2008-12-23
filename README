@@ -24,7 +24,13 @@ FramesReady:
 
   URI
   MIME-Base64
+  LWP-UserAgent
+  LWP-Debug
+  Net-HTTP
+  Net-FTP
+  HTML-HeadParser
   HTML-Parser
+  HTML-Form
   libnet
   libwww
   Digest-MD5

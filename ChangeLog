@@ -1,3 +1,36 @@
+2008-12-23  Alan E Derhaag  <aederhaag@alanhp.newerasoftdevel.com>
+
+	* lib/LWP/UserAgent/FramesReady.pm:
+	It was missed that the very first character in the file was an
+	unquoted 'c' prefixing the comment--an obvious fat finger situation.
+
+2008-12-22  Alan E Derhaag  <aederhaag@alanhp.newerasoftdevel.com>
+
+	* lib/LWP/UserAgent/FramesReady.pm:
+	Comments were enhanced and clarified when describing the callback.
+	There should be a note that callbacks cannot be undefined as built
+	into the process is the following out of redirects and refreshes.
+
+	* Makefile.PL:
+	Update with more required modules that are not part of the CORE
+	distribution so CPAN testing should work.
+
+2008-12-14  Alan E Derhaag  <aederhaag@alanhp.newerasoftdevel.com>
+
+	* t/net/config.pl.dist:
+	Restore config.pl.dist missing from the archive.
+
+	* MANIFEST:
+	Swapped activestate.t with cpan.t as the activestate.com site is
+	obsolete.
+
+	* t/net/frames.s: Restore frames.s missing from archive.
+
+	* lib/LWP/UserAgent/FramesReady.pm:
+	Revised the documentation for the default performance to return an
+	HTTP::Responce object in the event the return code is outside the
+	range of 200-399 as suggested by Jason Novak.
+
 2008-12-12  Alan E Derhaag  <aederhaag@alanhp.newerasoftdevel.com>
 
 	* README:
