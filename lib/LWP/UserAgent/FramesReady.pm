@@ -1,23 +1,23 @@
 ################################################################################
+# -*- mode: cperl; cperl-set-style: PerlStyle; -*-
 # LWP::UserAgent::FramesReady -- set up an environment for tracking frames
 # and framesets
 #
-# $Id: FramesReady.pm,v 1.19 2008/12/23 02:12:09 aederhaag Exp $
+# $Id: FramesReady.pm,v 1.20 2009/01/05 07:35:58 aederhaag Exp $
 ################################################################################
 # Allow POST to be redirected as well
 
 package LWP::UserAgent::FramesReady;
 use LWP::UserAgent;
 use URI::URL;
-use vars qw/$VERSION @redirects/;
+
 @ISA = qw(LWP::UserAgent);
 
 use HTTP::Response::Tree;
 use HTML::TokeParser;
-use LWP::Debug ();
 
-@redirects = ('GET', 'HEAD', 'POST');
-$VERSION = sprintf("%d.%03d", q$Revision: 1.19 $ =~ /(\d+)\.(\d+)/);
+our @redirects = ('GET', 'HEAD', 'POST');
+our $VERSION = sprintf("%d.%03d", q$Revision: 1.20 $ =~ /(\d+)\.(\d+)/);
 
 # constant for checking for a valid schema
 our @schema = ('http', 'ftp', 'nntp', 'gopher', 'wais', 'news', 'https');
@@ -25,7 +25,6 @@ our @schema = ('http', 'ftp', 'nntp', 'gopher', 'wais', 'news', 'https');
 sub new {
   my ($class, $cnf) = @_;
 
-  LWP::Debug::trace('()');
   my $callback = delete $cnf->{callback};
   $callback = \&LWP::UserAgent::FramesReady::callback unless defined $callback;
   my $size = delete $cnf->{size};
@@ -35,12 +34,13 @@ sub new {
   my $self = $class->SUPER::new();
   my $credent = delete $cnf->{credent};
   $credent = '' unless defined $credent; # Do not leave it an undef
-  $self->{callback} = $callback;
-  $self->{size} = $size;
-  $self->{nomax} = $nomax;
-  $self->{credent} = $credent;
+  $self->{'callback'} = $callback;
+  $self->{'size'} = $size;
+  $self->{'nomax'} = $nomax;
+  $self->{'credent'} = $credent;
   $self->requests_redirectable(\@redirects) if @redirects;
   $self->max_depth(3);
+  $self->{'errstring'} = '';
 
   bless ($self, $class);
   return $self;
@@ -131,16 +131,16 @@ sub request {
 
   # Try a different approach..  we already know to call ourselves with
   # the proper number of parameters.
+  $self->{'errstring'} = '';
   if (scalar @_ > 3){
-    LWP::Debug::trace('(' . join(',',@_) . ')');
-    LWP::Debug::debug("Called with more than three params; "
-		      . "LWP::UserAgent::request will be used instead");
+    $self->{'errstring'} = "Called with more than three params; "
+        . "LWP::UserAgent::request will be used instead";
     return $self->SUPER::request(@_);
   }
 
   my $req = shift;
   unless (eval{$req->isa('HTTP::Request')}) {
-    warn "request() not called with an HTTP::Request";
+    $self->{'errstring'} =  "request() not called with an HTTP::Request";
     return undef;
   }
 
@@ -173,7 +173,7 @@ sub request {
       if ($child) {
 	push @resp_queue, $child;
       } else {
-	LWP::Debug::debug("add_child failed");
+	$self->{'errstring'} = "add_child failed";
       }
     }
   }
@@ -232,16 +232,28 @@ sub max_depth {
 Get/set the callback subroutine to use to process input as it is
 gathered.  This causes the input to be chunked and the routine must
 either process the data itself or append it to the
-$response->{_content} in order for the final content to be processed
-all at one time.
+B<$response->{_content}> in order for the final content to be
+processed all at one time.
 
 =item $ua->size([$size])
 
 Get/Set the size suggested for chunks when the callback routine is used.
 
+=item $ua->nomax([$max])
+
+Get/set the B<$self->{'nomax'}> can be used by the included callback
+routine to enforce truncation of received content even if the request
+to do so is not honored by the server called for the content.
+
 =item $ua->credent([$credentials])
 
 Get/set the credentials for authentification if called for.
+
+=item $ua->errors()
+
+Get the last error encountered if a return was an undef.  This routine
+has only been tested in development so there is no guarantee that it
+will work within your functions.
 
 =cut
 
@@ -249,6 +261,7 @@ sub callbk   { shift->_elem('callback', @_); }
 sub size     { shift->_elem('size', @_); }
 sub nomax    { shift->_elem('nomax', @_); }
 sub credent  { shift->_elem('credent', @_); }
+sub errors   { shift->{'errstring'}; }
 
 =item callback()
 
@@ -312,8 +325,7 @@ sub callback {
 =item $ua->valid_scheme()
 
 The valid_scheme validates the frame src entry to scheme types we can
-process.  If LWP::Debug is set, there will be reporting of the reason
-for skipping this entry.
+process.
 
 =cut
 
@@ -322,12 +334,13 @@ sub valid_scheme ($) {
   my $urlchk = shift;
   my $scheme = '';
 
+  $self->{'errstring'} = '';
   if ($urlchk =~ s/^([^:]*)://) {
     $scheme = lc($1);
   }
 
   if ($scheme && ! grep {$scheme eq $_} @schema) {
-    LWP::Debug::debug("Invalid scheme [$scheme]");
+    $self->{'errstring'} = "Invalid scheme [$scheme]";
     return 0;
   }
 
@@ -345,10 +358,12 @@ context of a UserID and a Password to LWP::UserAgent::credentials().
 
 sub get_basic_credentials {
   my($self, $realm, $uri) = @_;
+
+  $self->{'errstring'} = '';
   if ($self->{credent}) {
-    LWP::Debug::debug("Credent: $realm (", $uri->as_string, ")");
     return split(':', $self->{credent}, 2);
   } else {
+    $self->{'errstring'} = "Not found: Credent $realm";
     return (undef, undef);
   }
 }
@@ -376,3 +391,5 @@ modify it under the same terms as Perl itself.
 =cut
 
 1;
+
+

@@ -1,3 +1,58 @@
+2009-01-05  Alan E Derhaag  <aederhaag@alanhp.newerasoftdevel.com>
+
+	* META.yml:
+	Editted by hand as it was unknown whether this file is any longer
+	needed and ExtUtils::MakeMaker does not seem to any longer replace or
+	update it.  The version was updated in any case.
+
+	* lib/LWP/UserAgent/FramesReady.pm:
+	The LWP::Debug usage was removed as it was not effectively deployed in
+	perl-libwww installations on all platforms.  The seemingly obsolete
+	'use vars' was replaced by making globals ours.  Class hash elements
+	were quoted to avoid clashes with internal names.  An
+	$self->{'errstring'} was a crippled LWP::Debug replacement for
+	testing.  Missing documentation for the nomax() getter and setter and
+	new documentation for the errors.
+
+	* t/net/cgi-bin/timeout, t/net/cgi-bin/test, t/net/cgi-bin/slowread, t/net/cgi-bin/nph-slowdata, t/net/cgi-bin/moved, t/net/cgi-bin/frametst, t/net/cgi-bin/frame1, t/net/proxy.t, t/net/moved.t, t/net/mirror.t, t/net/http-timeout.t, t/net/http-post.t, t/net/http-get.t, t/net/frames.s, t/net/config.pl.dist, t/local/protosub.t, t/local/http.t, t/local/frames.t, t/local/autoload.t, t/live/cpan.t, t/html/form.t, t/TEST, t/README, t/base/ua.t:
+	Restore testing facilities into CVS repository.
+
+	* MANIFEST:
+	Modified to remove LWP::Debug since it is not always distributed with
+	perl-libwww module in all platforms.
+
+	* META.yml:
+	Restore CVS repository to the version distributed with FramesReady 1.19
+
+	* README:
+	Removed the libnet and libwww requires along with LWP::Debug usage.
+
+2009-01-04  Alan E Derhaag  <aederhaag@alanhp.newerasoftdevel.com>
+
+	* README:
+	Corrected email response address since n2h2 is defunct.  Added more
+	requirements to cover those covered in the Makefile.PL file.
+
+	* Makefile.PL:
+	Rewrite of WriteMakefile structure to drop the requirement for
+	LWP::Debug since some platforms do not include it with perl-libwww.
+
+	* lib/LWP/UserAgent/FramesReady.pm:
+	Restore CVS repository to the current level deployed at version 1.19
+
+2008-12-24  Alan E Derhaag  <aederhaag@alanhp.newerasoftdevel.com>
+
+	* README:
+	The prerequisites were slimmed down removing the LWP::Debug since CPAN
+	testing does not implement it on a number of platforms.  The libwww
+	should supply LWP::UserAgent or at least it used to.
+
+	* lib/LWP/UserAgent/FramesReady.pm:
+	Evidently CPAN testing no longer uses LWP::Debug even though it
+	appears perl-libwww still comes with that module so to enable a clean
+	CPAN testing it is now commented out but available for uncomment if
+	the need arises.
+
 2008-12-23  Alan E Derhaag  <aederhaag@alanhp.newerasoftdevel.com>
 
 	* lib/LWP/UserAgent/FramesReady.pm:
