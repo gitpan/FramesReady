@@ -2,6 +2,7 @@
 
 use strict;
 
+
 # This script is run Test::Harness on the tests found under the
 # "t" directory.
 
@@ -21,8 +22,9 @@ unshift(@INC, "../blib/lib", "../blib/arch");
 
 
 use Test::Harness;
+
 $Test::Harness::verbose = shift
-  if $ARGV[0] && ($ARGV[0] =~ /^\d+$/ || $ARGV[0] eq "-v");
+    if defined $ARGV[0] && ($ARGV[0] =~ /^\d+$/ || $ARGV[0] eq "-v");
 
 my @tests;
 

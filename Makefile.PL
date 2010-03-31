@@ -1,5 +1,5 @@
 # This -*- perl -*- script writes the Makefile for FramesReady
-# $Id: Makefile.PL,v 1.18 2010/03/31 07:44:33 aederhaag Exp $
+# $Id: Makefile.PL,v 1.19 2010/03/31 09:10:00 aederhaag Exp $
 
 require 5.005;
 use strict;
@@ -126,7 +126,7 @@ WriteMakefile(
                   'HTTP::Daemon'	=> '0', # or a minimum working version
                   'Net::HTTP'		=> '0', # or a minimum working version
                   'Net::FTP'		=> "2.58",
-                  'Test::Harness'       => "3.21",
+                  'TAP::Formatter::File' => "3.21",
                   'Digest::MD5'		=> 0,},
               'dist'        => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     );

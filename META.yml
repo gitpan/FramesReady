@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               FramesReady
-version:            1.021
+version:            1.022
 abstract:           ~
 author:  []
 license:            unknown
@@ -10,16 +10,16 @@ configure_requires:
 build_requires:
     ExtUtils::MakeMaker:  0
 requires:
-    Digest::MD5:       0
-    HTML::Form:        0
-    HTML::HeadParser:  0
-    HTTP::Daemon:      0
-    LWP::UserAgent:    0
-    MIME::Base64:      2.1
-    Net::FTP:          2.58
-    Net::HTTP:         0
-    Test::Harness:     3.21
-    URI:               1.10
+    Digest::MD5:          0
+    HTML::Form:           0
+    HTML::HeadParser:     0
+    HTTP::Daemon:         0
+    LWP::UserAgent:       0
+    MIME::Base64:         2.1
+    Net::FTP:             2.58
+    Net::HTTP:            0
+    TAP::Formatter::File:  3.21
+    URI:                  1.10
 no_index:
     directory:
         - t

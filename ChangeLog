@@ -1,5 +1,66 @@
 2010-03-31  Alan E Derhaag  <aederhaag@alansys.newerasoftdevel.com>
 
+	* lib/LWP/UserAgent/FramesReady.pm:
+	Leave a few comments for anyone that looks for a reason that something
+	didn't work but also the TEST script changed requiring a CVS assigned
+	release number this module supplies.
+
+	* t/TEST:
+	Corrected change to eliminate warnings that disabled the 0 verbose
+	parameter.
+
+	* ChangeLog:
+	Update for recent work to hopefully satisfy the build on Windows boxes
+	running ActivePerl.
+
+	* Makefile.PL:
+	Added Test::Harness version that will satisfy the requirement
+	for TAP::Formatter::File on a ActivePerl installation.
+
+	* lib/LWP/UserAgent/FramesReady.pm:
+	Probably shouldn't have but the indent was bugging me and the
+	transition to get() instead of request() was signified in the
+	comments.
+
+	* t/live/cpan.t:
+	Slight burden to www.cpan.org but we probably can assume that it will
+	only was respond where llarian.com and activestate.com may not.  Of
+	course, the check needed to change with the URL being used.
+
+	* t/TEST:
+	Look for clean output by adding a check that there is input instead of
+	assuming there will.
+
+2010-03-31  Alan E Derhaag  <aederhaag@alansys.newerasoftdevel.com>
+
+	* lib/LWP/UserAgent/FramesReady.pm:
+	Probably shouldn't have but the indent was bugging me and the
+	possible transition to get() instead of request() was
+	signified in the comments.  Leave a few comments for anyone
+	that looks for a reason that something didn't work but also
+	the TEST script changed requiring a CVS assigned release
+	number this module supplies.
+
+	* ChangeLog:
+	Update for recent work to hopefully satisfy the build on Windows boxes
+	running ActivePerl.
+
+	* Makefile.PL:
+	Added Test::Harness version that will satisfy the requirement for
+	TAP::Formatter::File on a ActivePerl installation.
+
+	* t/live/cpan.t:
+	Slight burden to www.cpan.org but we probably can assume that it will
+	only was respond where llarian.com and activestate.com may not.  Of
+	course, the check needed to change with the URL being used.
+
+	* t/TEST:
+	Look for clean output by adding a check that there is input
+	instead of assuming there will.  Corrected change to eliminate
+	warnings that disabled the 0 verbose parameter.
+
+2010-03-31  Alan E Derhaag  <aederhaag@alansys.newerasoftdevel.com>
+
 	* Makefile.PL:
 	Added Test::Harness version that will satisfy the requirement for
 	TAP::Formatter::File on a ActivePerl installation.

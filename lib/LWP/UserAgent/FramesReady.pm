@@ -3,7 +3,7 @@
 # LWP::UserAgent::FramesReady -- set up an environment for tracking frames
 # and framesets
 #
-# $Id: FramesReady.pm,v 1.21 2010/03/31 07:36:08 aederhaag Exp $
+# $Id: FramesReady.pm,v 1.22 2010/03/31 09:02:35 aederhaag Exp $
 ################################################################################
 # Allow POST to be redirected as well
 
@@ -17,7 +17,7 @@ use HTTP::Response::Tree;
 use HTML::TokeParser;
 
 our @redirects = ('GET', 'HEAD', 'POST');
-our $VERSION = sprintf("%d.%03d", q$Revision: 1.21 $ =~ /(\d+)\.(\d+)/);
+our $VERSION = sprintf("%d.%03d", q$Revision: 1.22 $ =~ /(\d+)\.(\d+)/);
 
 # constant for checking for a valid schema
 our @schema = ('http', 'ftp', 'nntp', 'gopher', 'wais', 'news', 'https');
@@ -25,10 +25,14 @@ our @schema = ('http', 'ftp', 'nntp', 'gopher', 'wais', 'news', 'https');
 sub new {
     my ($class, $cnf) = @_;
 
+    # Why are we deleting the $cnf hash elements if we don't check for
+    # any unforeseen ones we don't use?  Perhaps the user does supply
+    # a callback routine but it shouldn't disable the immediate refresh
+    # conversion to a redirect.
     my $callback = delete $cnf->{callback};
     $callback = \&LWP::UserAgent::FramesReady::callback unless defined $callback;
     my $size = delete $cnf->{size};
-    $size = 8192 unless defined $size;
+    $size = 8192 unless defined $size; # Set a convenient size for chunks
     my $nomax = delete $cnf->{nomax};
     $nomax = 0 unless defined $nomax;
     my $self = $class->SUPER::new();
@@ -144,9 +148,9 @@ sub request {
         return undef;
     }
 
-    # This appears to still work but it should probably be updated to
-    # use the protocol of LWP::UserAgent to specify the special field
-    # handling of get():
+    # The use of a callback appears to still work but it should
+    # probably be updated to use a protocol of LWP::UserAgent
+    # specifying the special field handling like get():
     #    :content_cb     => \&callback
     #    :read_size_hint => $bytes
     my $tree = $self->SUPER::request($req, $self->{callback}, $self->{size});
