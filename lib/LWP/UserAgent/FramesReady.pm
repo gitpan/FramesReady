@@ -3,7 +3,7 @@
 # LWP::UserAgent::FramesReady -- set up an environment for tracking frames
 # and framesets
 #
-# $Id: FramesReady.pm,v 1.20 2009/01/05 07:35:58 aederhaag Exp $
+# $Id: FramesReady.pm,v 1.21 2010/03/31 07:36:08 aederhaag Exp $
 ################################################################################
 # Allow POST to be redirected as well
 
@@ -17,33 +17,33 @@ use HTTP::Response::Tree;
 use HTML::TokeParser;
 
 our @redirects = ('GET', 'HEAD', 'POST');
-our $VERSION = sprintf("%d.%03d", q$Revision: 1.20 $ =~ /(\d+)\.(\d+)/);
+our $VERSION = sprintf("%d.%03d", q$Revision: 1.21 $ =~ /(\d+)\.(\d+)/);
 
 # constant for checking for a valid schema
 our @schema = ('http', 'ftp', 'nntp', 'gopher', 'wais', 'news', 'https');
 
 sub new {
-  my ($class, $cnf) = @_;
+    my ($class, $cnf) = @_;
 
-  my $callback = delete $cnf->{callback};
-  $callback = \&LWP::UserAgent::FramesReady::callback unless defined $callback;
-  my $size = delete $cnf->{size};
-  $size = 8192 unless defined $size;
-  my $nomax = delete $cnf->{nomax};
-  $nomax = 0 unless defined $nomax;
-  my $self = $class->SUPER::new();
-  my $credent = delete $cnf->{credent};
-  $credent = '' unless defined $credent; # Do not leave it an undef
-  $self->{'callback'} = $callback;
-  $self->{'size'} = $size;
-  $self->{'nomax'} = $nomax;
-  $self->{'credent'} = $credent;
-  $self->requests_redirectable(\@redirects) if @redirects;
-  $self->max_depth(3);
-  $self->{'errstring'} = '';
+    my $callback = delete $cnf->{callback};
+    $callback = \&LWP::UserAgent::FramesReady::callback unless defined $callback;
+    my $size = delete $cnf->{size};
+    $size = 8192 unless defined $size;
+    my $nomax = delete $cnf->{nomax};
+    $nomax = 0 unless defined $nomax;
+    my $self = $class->SUPER::new();
+    my $credent = delete $cnf->{credent};
+    $credent = '' unless defined $credent; # Do not leave it an undef
+    $self->{'callback'} = $callback;
+    $self->{'size'} = $size;
+    $self->{'nomax'} = $nomax;
+    $self->{'credent'} = $credent;
+    $self->requests_redirectable(\@redirects) if @redirects;
+    $self->max_depth(3);
+    $self->{'errstring'} = '';
 
-  bless ($self, $class);
-  return $self;
+    bless ($self, $class);
+    return $self;
 }
 
 =head1 NAME
@@ -127,78 +127,83 @@ except as denoted above.
 =cut
 
 sub request {
-  my $self = shift;
+    my $self = shift;
 
-  # Try a different approach..  we already know to call ourselves with
-  # the proper number of parameters.
-  $self->{'errstring'} = '';
-  if (scalar @_ > 3){
-    $self->{'errstring'} = "Called with more than three params; "
-        . "LWP::UserAgent::request will be used instead";
-    return $self->SUPER::request(@_);
-  }
-
-  my $req = shift;
-  unless (eval{$req->isa('HTTP::Request')}) {
-    $self->{'errstring'} =  "request() not called with an HTTP::Request";
-    return undef;
-  }
-
-  my $tree = $self->SUPER::request($req, $self->{callback}, $self->{size});
-
-  # Don't track frames for possible redirects or 404 error pages
-  #  or LWP::RobotUA robot configuration files
-  return $tree if $tree->code >= 400 || $tree->code < 200 ||
-    $tree->request->uri =~ /robots.txt$/;
-
-  # Only valid to track frames in HTML or SHTML--use HTTP::Headers method
-  return $tree unless $tree->content_type =~ m#text/html#;
-
-  $tree = HTTP::Response::Tree->new($tree) unless
-    $tree->isa('HTTP::Response::Tree');
-  $tree->max_depth($self->max_depth);
-
-  my @resp_queue = ($tree);
-  my $parent;
-  while ($parent = shift @resp_queue) {
-    next unless $parent->max_depth;
-    my @children = $self->_extract_frame_uris($parent);
-    foreach (@children) {
-      my $request = $parent->request->clone;
-      $request->uri($_);
-      $request->headers->{'pragma'} = 'no_wait';
-      my $child = $parent->add_child($self->SUPER::request($request,
-							   $self->{callback},
-							   $self->{size}));
-      if ($child) {
-	push @resp_queue, $child;
-      } else {
-	$self->{'errstring'} = "add_child failed";
-      }
+    # Try a different approach..  we already know to call ourselves with
+    # the proper number of parameters.
+    $self->{'errstring'} = '';
+    if (scalar @_ > 3) {
+        $self->{'errstring'} = "Called with more than three params; "
+            . "LWP::UserAgent::request will be used instead";
+        return $self->SUPER::request(@_);
     }
-  }
-  return $tree;
+
+    my $req = shift;
+    unless (eval{$req->isa('HTTP::Request')}) {
+        $self->{'errstring'} =  "request() not called with an HTTP::Request";
+        return undef;
+    }
+
+    # This appears to still work but it should probably be updated to
+    # use the protocol of LWP::UserAgent to specify the special field
+    # handling of get():
+    #    :content_cb     => \&callback
+    #    :read_size_hint => $bytes
+    my $tree = $self->SUPER::request($req, $self->{callback}, $self->{size});
+
+    # Don't track frames for possible redirects or 404 error pages
+    #  or LWP::RobotUA robot configuration files
+    return $tree if $tree->code >= 400 || $tree->code < 200 ||
+        $tree->request->uri =~ /robots.txt$/;
+
+    # Only valid to track frames in HTML or SHTML--use HTTP::Headers method
+    return $tree unless $tree->content_type =~ m#text/html#;
+
+    $tree = HTTP::Response::Tree->new($tree) unless
+        $tree->isa('HTTP::Response::Tree');
+    $tree->max_depth($self->max_depth);
+
+    my @resp_queue = ($tree);
+    my $parent;
+    while ($parent = shift @resp_queue) {
+        next unless $parent->max_depth;
+        my @children = $self->_extract_frame_uris($parent);
+        foreach (@children) {
+            my $request = $parent->request->clone;
+            $request->uri($_);
+            $request->headers->{'pragma'} = 'no_wait';
+            my $child = $parent->add_child($self->SUPER::request($request,
+                                                                 $self->{callback},
+                                                                 $self->{size}));
+            if ($child) {
+                push @resp_queue, $child;
+            } else {
+                $self->{'errstring'} = "add_child failed";
+            }
+        }
+    }
+    return $tree;
 }
 
 sub _extract_frame_uris {
-  my $self = shift;
-  my $response = shift;
-  my $base_path = $response->request->uri;
-  my @uris = ();
+    my $self = shift;
+    my $response = shift;
+    my $base_path = $response->request->uri;
+    my @uris = ();
 
-  my $p = HTML::TokeParser->new(\$response->content);
-  while (my $frm = $p->get_tag('frame')) {
-    next unless $self->valid_scheme($frm->[1]{'src'});
-    my $nurl = URI->new_abs($frm->[1]{'src'}, $base_path);
-    push @uris, $nurl;
-  }
-  $p = HTML::TokeParser->new(\$response->content);
-  while (my $tag = $p->get_tag('iframe')) {
-    next unless $self->valid_scheme($tag->[1]{'src'});
-    my $nurl = URI->new_abs($tag->[1]{'src'}, $base_path);
-    push @uris, $nurl;
-  }
-  return @uris;
+    my $p = HTML::TokeParser->new(\$response->content);
+    while (my $frm = $p->get_tag('frame')) {
+        next unless $self->valid_scheme($frm->[1]{'src'});
+        my $nurl = URI->new_abs($frm->[1]{'src'}, $base_path);
+        push @uris, $nurl;
+    }
+    $p = HTML::TokeParser->new(\$response->content);
+    while (my $tag = $p->get_tag('iframe')) {
+        next unless $self->valid_scheme($tag->[1]{'src'});
+        my $nurl = URI->new_abs($tag->[1]{'src'}, $base_path);
+        push @uris, $nurl;
+    }
+    return @uris;
 }
 
 =back 4
@@ -217,13 +222,13 @@ and so on.  The default is 3.
 =cut
 
 sub max_depth {
-  my $self = shift;
-  my $depth = shift;
+    my $self = shift;
+    my $depth = shift;
 
-  if (defined($depth)) {
-    $self->{_luf_max_depth} = int($depth);
-  }
-  return $self->{_luf_max_depth};
+    if (defined($depth)) {
+        $self->{_luf_max_depth} = int($depth);
+    }
+    return $self->{_luf_max_depth};
 }
 
 
@@ -279,47 +284,47 @@ already be content from a previous chunk that was processed.
 =cut
 
 sub callback {
-  my ($data, $resp, $proto) = @_;
+    my ($data, $resp, $proto) = @_;
 
-  # LWP::UserAgent should be populating the refresh header--process it here
-  if (exists($resp->headers->{'refresh'})) {
-    if ($resp->headers->{'refresh'} =~ /^[0-9];.*URL=([^">]+)/is) {
-      my $url = $1;
-      unless ($url =~ /^(file|java|vb)/is ) {
-          delete $resp->headers->{'refresh'};
-          $resp->headers->{'location'} = $url;
-          $resp->code(&HTTP::Status::RC_MOVED_TEMPORARILY);
-      }
+    # LWP::UserAgent should be populating the refresh header--process it here
+    if (exists($resp->headers->{'refresh'})) {
+        if ($resp->headers->{'refresh'} =~ /^[0-9];.*URL=([^">]+)/is) {
+            my $url = $1;
+            unless ($url =~ /^(file|java|vb)/is ) {
+                delete $resp->headers->{'refresh'};
+                $resp->headers->{'location'} = $url;
+                $resp->code(&HTTP::Status::RC_MOVED_TEMPORARILY);
+            }
+        }
+    } elsif ($data =~ /HTTP-EQUIV=\"?REFRESH\"? CONTENT=\"?\s?[0-9];.*URL=([^">]+)/is) {
+        # if headers->{refresh} was not generated (in content instead of header)
+        my $loc = $1;
+        unless ($loc =~ /^(file|java|vb)/is ) {
+            delete $resp->headers->{'refresh'} if
+                exists $resp->headers->{'refresh'};
+            $resp->headers->{'location'} = $loc;
+            $resp->code(&HTTP::Status::RC_MOVED_TEMPORARILY);
+        }
     }
-  } elsif ($data =~ /HTTP-EQUIV=\"?REFRESH\"? CONTENT=\"?\s?[0-9];.*URL=([^">]+)/is){
-    # if headers->{refresh} was not generated (in content instead of header)
-    my $loc = $1;
-    unless ($loc =~ /^(file|java|vb)/is ) {
-	delete $resp->headers->{'refresh'} if
-	    exists $resp->headers->{'refresh'};
-	$resp->headers->{'location'} = $loc;
-	$resp->code(&HTTP::Status::RC_MOVED_TEMPORARILY);
-    }
-  }
 
-  # Fixup to correct override by server for request for max bytes
-  # Servers have no compulsion to follow the request but if we made it
-  # we want it enforced here unless told otherwise
-  if (defined($resp->request->headers->{'range'}) && ! $self->{nomax}) {
-    my ($maxs) = $resp->request->headers->{'range'} =~ /bytes=0-(.*)/;
-    if ($maxs && length($resp->content) > $maxs) {
-      $data = '';
-      if ($resp->code ne &HTTP::Status::RC_PARTIAL_CONTENT) {
-	  $resp->headers->{'content-length'} = length($resp->content);
-	  $resp->code(&HTTP::Status::RC_PARTIAL_CONTENT);
-	  $resp->{_msg} = HTTP::Status::status_message($resp->code);
-      }
+    # Fixup to correct override by server for request for max bytes
+    # Servers have no compulsion to follow the request but if we made it
+    # we want it enforced here unless told otherwise
+    if (defined($resp->request->headers->{'range'}) && ! $self->{nomax}) {
+        my ($maxs) = $resp->request->headers->{'range'} =~ /bytes=0-(.*)/;
+        if ($maxs && length($resp->content) > $maxs) {
+            $data = '';
+            if ($resp->code ne &HTTP::Status::RC_PARTIAL_CONTENT) {
+                $resp->headers->{'content-length'} = length($resp->content);
+                $resp->code(&HTTP::Status::RC_PARTIAL_CONTENT);
+                $resp->{_msg} = HTTP::Status::status_message($resp->code);
+            }
+        }
     }
-  }
 
-  # We must restore the _content since the parent assumes we deal with it
-  $resp->{_content} .= $data;
-  return undef;
+    # We must restore the _content since the parent assumes we deal with it
+    $resp->{_content} .= $data;
+    return undef;
 }
 
 =item $ua->valid_scheme()
@@ -330,21 +335,21 @@ process.
 =cut
 
 sub valid_scheme ($) {
-  my $self   = shift;
-  my $urlchk = shift;
-  my $scheme = '';
+    my $self   = shift;
+    my $urlchk = shift;
+    my $scheme = '';
 
-  $self->{'errstring'} = '';
-  if ($urlchk =~ s/^([^:]*)://) {
-    $scheme = lc($1);
-  }
+    $self->{'errstring'} = '';
+    if ($urlchk =~ s/^([^:]*)://) {
+        $scheme = lc($1);
+    }
 
-  if ($scheme && ! grep {$scheme eq $_} @schema) {
-    $self->{'errstring'} = "Invalid scheme [$scheme]";
-    return 0;
-  }
+    if ($scheme && ! grep {$scheme eq $_} @schema) {
+        $self->{'errstring'} = "Invalid scheme [$scheme]";
+        return 0;
+    }
 
-  return 1;
+    return 1;
 }
 
 =item $ua->get_basic_credentials()
@@ -357,15 +362,15 @@ context of a UserID and a Password to LWP::UserAgent::credentials().
 =cut
 
 sub get_basic_credentials {
-  my($self, $realm, $uri) = @_;
+    my($self, $realm, $uri) = @_;
 
-  $self->{'errstring'} = '';
-  if ($self->{credent}) {
-    return split(':', $self->{credent}, 2);
-  } else {
-    $self->{'errstring'} = "Not found: Credent $realm";
-    return (undef, undef);
-  }
+    $self->{'errstring'} = '';
+    if ($self->{credent}) {
+        return split(':', $self->{credent}, 2);
+    } else {
+        $self->{'errstring'} = "Not found: Credent $realm";
+        return (undef, undef);
+    }
 }
 
 =back

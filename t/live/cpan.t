@@ -5,7 +5,8 @@ use Net::HTTP;
 
 
 # my $s = Net::HTTP->new(Host => "ftp.activestate.com",
-my $s = Net::HTTP->new(Host => "cpan.llarian.net",
+# my $s = Net::HTTP->new(Host => "cpan.llarian.net",
+my $s = Net::HTTP->new(Host => "www.cpan.org",
 		       KeepAlive => 1,
 		       Timeout => 15,
 		       PeerHTTPVersion => "1.1",
@@ -34,7 +35,7 @@ for (1..2) {
     $buf =~ s/\r//g;
 
     $err++ unless $buf eq "TRACE /pub/CPAN HTTP/1.1
-Host: cpan.llarian.net
+Host: www.cpan.org
 User-Agent: Mozilla/5.0
 Accept-Language: no,en
 Accept: */*

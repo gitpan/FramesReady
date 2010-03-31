@@ -1,3 +1,37 @@
+2010-03-31  Alan E Derhaag  <aederhaag@alansys.newerasoftdevel.com>
+
+	* Makefile.PL:
+	Added Test::Harness version that will satisfy the requirement for
+	TAP::Formatter::File on a ActivePerl installation.
+
+	* lib/LWP/UserAgent/FramesReady.pm:
+	Probably shouldn't have but the indent was bugging me and the
+	transition to get() instead of request() was signified in the
+	comments.
+
+	* t/live/cpan.t:
+	Slight burden to www.cpan.org but we probably can assume that it will
+	always respond where llarian.com and activestate.com may not.  Of
+	course, the check needed to change with the URL being used.
+
+	* t/TEST:
+	Look for clean output by adding a check that there is input instead of
+	assuming there will.
+
+	* lib/HTTP/Response/Tree.pm:
+	Added confirmation that this is part of the FramesReady packaging.
+
+2009-01-05  Alan E Derhaag  <aederhaag@alansys.newerasoftdevel.com>
+
+	* ChangeLog:
+	Updated for historical reasons not knowing if this is still a
+	requirement or anticipated element in the package.
+
+	* META.yml:
+	Editted by hand as it was unknown whether this file is any longer
+	needed and ExtUtils::MakeMaker does not seem to any longer replace or
+	update it.  The version was updated in any case.
+
 2009-01-05  Alan E Derhaag  <aederhaag@alanhp.newerasoftdevel.com>
 
 	* META.yml:

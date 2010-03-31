@@ -1,8 +1,8 @@
 ################################################################################
 # HTTP::Response::Tree -- set up an environment for tracking frames
-# and framesets
+# and framesets.  This is packaged with the FramesReady module.
 #
-# $Id: Tree.pm,v 1.16 2007/10/25 07:20:53 aederhaag Exp $
+# $Id: Tree.pm,v 1.17 2010/03/31 05:53:03 aederhaag Exp $
 ################################################################################
 
 package   HTTP::Response::Tree;
@@ -12,7 +12,7 @@ use       vars qw/$VERSION/;	# make it exportable
 
 use strict;
 
-$VERSION = sprintf("%d.%03d", q$Revision: 1.16 $ =~ /(\d+)\.(\d+)/);
+$VERSION = sprintf("%d.%03d", q$Revision: 1.17 $ =~ /(\d+)\.(\d+)/);
 
 sub new {
   my ($proto, $obj) = @_;
