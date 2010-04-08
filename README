@@ -31,6 +31,8 @@ FramesReady:
   HTML-Parser
   HTML-Form
   Digest-MD5
+  HTTP-Daemon
+  TAP-Fomatter-File
 
 These packages should be available on CPAN (see below).
 

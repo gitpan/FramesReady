@@ -13,7 +13,7 @@ if ($D eq 'daemon') {
 
     require HTTP::Daemon;
 
-    my $d = HTTP::Daemon->new(Timeout => 10);
+    my $d = HTTP::Daemon->new(Timeout => 60); # We kill the daemon before a timeout anyway
 
     print "Please to meet you at: <URL:", $d->url, ">\n";
     open(STDOUT, $^O eq 'VMS'? ">nl: " : ">/dev/null");
@@ -153,8 +153,8 @@ print "not " unless $res->is_success
 		and $res->content_length == 147
 		and $res->title eq 'En prøve'
 		and $res->content =~ /å være/;
-print "ok 5\n";		
-
+print "ok 5\n";
+unlink "$file";
 
 # A second try on the same file, should fail because we unlink it
 $res = $ua->request($req);
@@ -162,7 +162,7 @@ $res = $ua->request($req);
 print "not " unless $res->is_error
                 and $res->code == 404;   # not found
 print "ok 6\n";
-		
+
 # Then try to list current directory
 $req = new HTTP::Request GET => url("/file?name=.", $base);
 $res = $ua->request($req);
@@ -322,7 +322,7 @@ print "not " unless $res->is_success
                 and /^Content-Length:\s*16$/mi
 		and /^Content-Type:\s*application\/x-www-form-urlencoded$/mi
 		and /^foo=bar&bar=test$/m;
-print "ok 17\n";		
+print "ok 17\n";
 
 #----------------------------------------------------------------
 print "Terminating server...\n";

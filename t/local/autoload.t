@@ -2,9 +2,13 @@
 # See if autoloading of protocol schemes work
 #
 
-print "1..1\n";
+use Test::More tests => 2;
+use diagnostics;
 
-require LWP::UserAgent::FramesReady;
+BEGIN {
+    require_ok('LWP::UserAgent::FramesReady');
+}
+
 # note no LWP::Protocol::file;
 
 $url = "file:.";
@@ -19,10 +23,11 @@ $ua->callbk(undef);		# No callback routine for this simple
 my $request = HTTP::Request->new(GET => $url);
 
 my $response = $ua->request($request);
+is($response->is_success, 1, "Check for valid response");
+
+# Verbose reporting
 if ($response->is_success) {
-    print "ok 1\n";
     print $response->as_string;
 } else {
-    print "not ok 1\n";
     print $response->error_as_HTML;
 }

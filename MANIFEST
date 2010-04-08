@@ -5,12 +5,10 @@ README				Get you started with this package
 TODO				The To-Do list for the library
 lib/HTTP/Response/Tree.pm	Class encapsulating HTTP Responses
 lib/LWP/UserAgent/FramesReady.pm	A WWW UserAgent class
-# lib/LWP/MyDebug.pm              Supplied when CPAN testing cannot load LWP::Debug
 t/README			How to run and set up tests
 t/TEST				Run tests
 t/base/ua.t			Basic LWP::UserAgent tests
 t/html/form.t			Test HTML::Form module
-t/live/cpan.t		        Setup live testing and directory for Makefile.PL
 t/local/autoload.t		Test autoloading of LWP::Protocol modules
 t/local/frames.t		Test frame with emulation processing
 t/local/http.t			Test http to local server

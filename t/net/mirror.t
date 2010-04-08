@@ -1,34 +1,51 @@
+#!/usr/bin/perl -w
+# $Id: mirror.t,v 1.2 2010/04/08 04:16:28 aederhaag Exp $
 #
 # Test mirroring a file
 #
 
-require "net/config.pl";
+use File::Basename;
+use Test::More tests => 5;
+use diagnostics;
+
+my ($junk,$path) = fileparse($0); # Just capture the path
+
+require "${path}config.pl";
 require LWP::Protocol::http;
 require LWP::UserAgent::FramesReady;
 require HTTP::Status;
 
-print "1..2\n";
+# Kludge to get around the temporary file write problem for apache user
+my $copy = "/var/tmp/lwp-test-$$";
 
 my $ua = new LWP::UserAgent::FramesReady;    # create a useragent to test
+isa_ok($ua, 'LWP::UserAgent::FramesReady');
 
-my $url = "http://$net::httpserver/";
-my $copy = "lwp-test-$$"; # downloaded copy
-
+my $url = "http://$net::httpserver" . $net::cgidir . "/test";
 my $response = $ua->mirror($url, $copy);
 
-if ($response->code == &HTTP::Status::RC_OK) {
-    print "ok 1\n";
-} else {
-    print "not ok 1\n";
-}
+isa_ok($response, 'HTTP::Response');
+is($response->code, &HTTP::Status::RC_OK, "Got the expected good response code");
 
-# OK, so now do it again, should get Not-Modified
-$response = $ua->mirror($url, $copy);
-if ($response->code == &HTTP::Status::RC_NOT_MODIFIED) {
-    print "ok 2\n";
-} else {
-    print "nok ok 2\n";
+my $str = $response->as_string;
+print "$str\n";
+
+my $file = "file://$copy";
+my $req = HTTP::Request->new('GET', $file);
+my ($mtime) = ( stat($copy) )[9];
+if ($mtime) {
+    $req->header( 'If-Modified-Since' => HTTP::Date::time2str($mtime) );
 }
+print $req->as_string, "\n";
+
+$response = $ua->request($req);
+is($response->code, &HTTP::Status::RC_NOT_MODIFIED, "Expected NOT MODIFIED status code");
+$str = $response->as_string;
+print "$str\n";
+
 unlink($copy);
+isnt(-e $copy, 1, "Mirror copy cleanup successful");
 
-$net::httpserver = $net::httpserver;  # avoid -w warning
+$dummy = $net::httpserver;  # avoid -w warning
+$dummy = $net::cgidir;
+

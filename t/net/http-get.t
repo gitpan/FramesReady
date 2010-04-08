@@ -1,45 +1,43 @@
 #!/usr/bin/perl -w
+# $Id: http-get.t,v 1.2 2010/04/06 02:56:35 aederhaag Exp $
 #
 # Check GET via HTTP.
 #
 
-print "1..2\n";
+use File::Basename;
+use Test::More tests => 6;
 
-require "net/config.pl";
+my ($file,$path) = fileparse($0);
+
 require URI::URL;
 require LWP::Protocol::http;
 require LWP::UserAgent::FramesReady;
 
+require "${path}config.pl";
+
 my $ua = new LWP::UserAgent::FramesReady;    # create a useragent to test
+isa_ok($ua, 'LWP::UserAgent::FramesReady');
 
 $netloc = $net::httpserver;
 $script = $net::cgidir . "/test";
-
 $url = new URI::URL("http://$netloc$script?query");
+isa_ok($url, 'URI::URL');
 
 my $request = new HTTP::Request('GET', $url);
+isa_ok($request, 'HTTP::Request');
 
 print "GET $url\n\n";
 
 my $response = $ua->request($request, undef, undef);
 
 my $str = $response->as_string;
+like($str, qr/^REQUEST_METHOD=GET$/m, "Expected response content");
 
 print "$str\n";
 
-if ($response->is_success and $str =~ /^REQUEST_METHOD=GET$/m) {
-    print "ok 1\n";
-}
-else {
-    print "not ok 1\n";
-}
+is($response->is_success, 1, "Good HTTP response");
+like($str, qr/^QUERY_STRING=query$/m, "Expected query response");
 
-if ($str =~ /^QUERY_STRING=query$/m) {
-    print "ok 2\n";
-}
-else {
-    print "not ok 2\n";
-}
 
 # avoid -w warning
 $dummy = $net::httpserver;

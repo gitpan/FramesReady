@@ -3,7 +3,7 @@
 # LWP::UserAgent::FramesReady -- set up an environment for tracking frames
 # and framesets
 #
-# $Id: FramesReady.pm,v 1.22 2010/03/31 09:02:35 aederhaag Exp $
+# $Id: FramesReady.pm,v 1.23 2010/04/08 04:21:47 aederhaag Exp $
 ################################################################################
 # Allow POST to be redirected as well
 
@@ -17,7 +17,7 @@ use HTTP::Response::Tree;
 use HTML::TokeParser;
 
 our @redirects = ('GET', 'HEAD', 'POST');
-our $VERSION = sprintf("%d.%03d", q$Revision: 1.22 $ =~ /(\d+)\.(\d+)/);
+our $VERSION = sprintf("%d.%03d", q$Revision: 1.23 $ =~ /(\d+)\.(\d+)/);
 
 # constant for checking for a valid schema
 our @schema = ('http', 'ftp', 'nntp', 'gopher', 'wais', 'news', 'https');
@@ -133,10 +133,11 @@ except as denoted above.
 sub request {
     my $self = shift;
 
-    # Try a different approach..  we already know to call ourselves with
-    # the proper number of parameters.
+    # Try a different approach..  we already know to call ourselves
+    # with the proper number of parameters.  Must handle mirror() that
+    # might call us back.
     $self->{'errstring'} = '';
-    if (scalar @_ > 3) {
+    if ( scalar @_ > 3 || ($_[1] && ! ref $_[1]) ) {
         $self->{'errstring'} = "Called with more than three params; "
             . "LWP::UserAgent::request will be used instead";
         return $self->SUPER::request(@_);

@@ -27,6 +27,7 @@ sub new {
 
   $self->max_depth(3);
   $self->{_hrt_children} = [];
+  $self->{'quiet'} = 0;
   return $self;
 }
 
@@ -154,7 +155,7 @@ sub member {
   my $uri = shift;
 
   unless ($uri) {
-    warn "member() called without a URI";
+    warn "member() called without a URI" unless $self->{'quiet'};
     return undef;
   }
   unless (eval{$uri->isa('URI')}) {
@@ -247,7 +248,7 @@ sub cat_all_content {
   unless ($mime_type eq "*"
 	  or    $mime_type =~ /^[a-z._-]+\/(\*|[a-z._-]+)$/i)
     {
-      warn "Possibly invalid MIME type ($mime_type)";
+      warn "Possibly invalid MIME type ($mime_type)" unless $self->{'quiet'};
       return undef;
     }
 
